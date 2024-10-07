@@ -1,0 +1,11 @@
+blinker==1.8.2
+click==8.1.7
+Flask==3.0.3
+itsdangerous==2.2.0
+Jinja2==3.1.4
+MarkupSafe==2.1.5
+Werkzeug==3.0.4
+python-nmap==0.7.1
+pyclamd==0.4.0  # Updated from clamd for better compatibility
+pymongo==4.5.0  # Updated to latest stable version
+python-dateutil==2.8.2  # Added for better date handling

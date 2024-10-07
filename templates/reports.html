@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scan Reports</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary-color: #2563eb;
+        --secondary-color: #1d4ed8;
+        --success-color: #16a34a;
+        --warning-color: #ca8a04;
+        --error-color: #dc2626;
+        --background-color: #f8fafc;
+        --card-background: #ffffff;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Inter", system-ui, -apple-system, sans-serif;
+        background: var(--background-color);
+        color: #1e293b;
+        line-height: 1.5;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .header {
+        background: var(--primary-color);
+        color: white;
+        padding: 20px 0;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+
+      .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 20px;
+      }
+
+      .header h1 {
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .reports-container {
+        background: var(--card-background);
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+
+      .filters {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+      }
+
+      .filter-select {
+        padding: 8px 16px;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        background: white;
+        color: #1e293b;
+        font-size: 14px;
+        cursor: pointer;
+      }
+
+      .report-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 16px;
+        transition: all 0.3s ease;
+      }
+
+      .report-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+
+      .report-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid #e2e8f0;
+      }
+
+      .report-type {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+      }
+
+      .report-timestamp {
+        color: #64748b;
+        font-size: 14px;
+      }
+
+      .report-content {
+        margin-top: 16px;
+      }
+
+      .report-details {
+        background: #f8fafc;
+        border-radius: 8px;
+        padding: 16px;
+        margin-top: 16px;
+        font-family: monospace;
+        white-space: pre-wrap;
+      }
+
+      .status-badge {
+        padding: 4px 12px;
+        border-radius: 16px;
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .status-success {
+        background: #dcfce7;
+        color: var(--success-color);
+      }
+
+      .status-error {
+        background: #fee2e2;
+        color: var(--error-color);
+      }
+
+      .status-infected {
+        background: #fee2e2;
+        color: var(--error-color);
+      }
+
+      .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 24px;
+      }
+
+      .page-button {
+        padding: 8px 16px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        background: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .page-button:hover {
+        background: #f1f5f9;
+      }
+
+      .page-button.active {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+      }
+
+      .no-reports {
+        text-align: center;
+        padding: 40px;
+        color: #64748b;
+      }
+
+      pre {
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="container">
+        <div class="header-content">
+          <h1>
+            <i class="fas fa-history"></i>
+            Scan Reports
+          </h1>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="reports-container">
+        <div class="filters">
+          <select class="filter-select" id="typeFilter">
+            <option value="all">All Types</option>
+            <option value="ip_scan">IP Scans</option>
+            <option value="malware_scan">Malware Scans</option>
+          </select>
+          <select class="filter-select" id="timeFilter">
+            <option value="all">All Time</option>
+            <option value="24h">Last 24 Hours</option>
+            <option value="7d">Last 7 Days</option>
+            <option value="30d">Last 30 Days</option>
+          </select>
+          <select class="filter-select" id="statusFilter">
+            <option value="all">All Status</option>
+            <option value="success">Success</option>
+            <option value="failed">Failed</option>
+            <option value="infected">Infected</option>
+          </select>
+        </div>
+
+        <div id="reportsList"></div>
+        <div class="pagination" id="pagination"></div>
+      </div>
+    </div>
+
+    <script>
+      let currentPage = 1;
+      const reportsPerPage = 10;
+
+      async function fetchReports() {
+        const typeFilter = document.getElementById("typeFilter").value;
+        const timeFilter = document.getElementById("timeFilter").value;
+        const statusFilter = document.getElementById("statusFilter").value;
+
+        try {
+          const response = await fetch(
+            `/api/reports?page=${currentPage}&type=${typeFilter}&time=${timeFilter}&status=${statusFilter}`
+          );
+          const data = await response.json();
+          displayReports(data.reports, data.total);
+        } catch (error) {
+          console.error("Error fetching reports:", error);
+        }
+      }
+
+      function getReportStatus(report) {
+        if (report.type === "malware_scan") {
+          // For malware scans, check the nested status
+          return report.result?.status || "unknown";
+        } else {
+          // For IP scans, use the top-level status
+          return report.status || "unknown";
+        }
+      }
+
+      function getStatusClass(status) {
+        switch (status.toLowerCase()) {
+          case "success":
+            return "status-success";
+          case "infected":
+            return "status-infected";
+          case "failed":
+          case "error":
+            return "status-error";
+          default:
+            return "status-error";
+        }
+      }
+
+      function displayReports(reports, total) {
+        const reportsList = document.getElementById("reportsList");
+        reportsList.innerHTML = "";
+
+        if (reports.length === 0) {
+          reportsList.innerHTML = `
+              <div class="no-reports">
+                <i class="fas fa-folder-open fa-3x" style="margin-bottom: 16px; color: #94a3b8;"></i>
+                <p>No reports found</p>
+              </div>
+            `;
+          return;
+        }
+
+        reports.forEach((report) => {
+          const card = document.createElement("div");
+          card.className = "report-card";
+
+          const timestamp = report.timestamp
+            ? report.timestamp.$date
+              ? new Date(report.timestamp.$date).toLocaleString()
+              : new Date(report.timestamp).toLocaleString()
+            : "N/A";
+
+          // Get status and status class
+          const status = getReportStatus(report);
+          const statusClass = getStatusClass(status);
+
+          // Prepare scan details based on type
+          let scanDetails = "";
+          if (report.type === "ip_scan") {
+            scanDetails = `
+                <div class="report-details">
+                  <div><strong>Target IP:</strong> ${report.target_ip}</div>
+                  <pre>${report.result}</pre>
+                </div>
+              `;
+          } else if (report.type === "malware_scan") {
+            let resultDetails = "";
+            if (report.result.details) {
+              for (const [file, info] of Object.entries(
+                report.result.details
+              )) {
+                resultDetails += `File: ${file}\nStatus: ${info.join(" - ")}\n`;
+              }
+            }
+            scanDetails = `
+                <div class="report-details">
+                  <div><strong>File:</strong> ${report.filename}</div>
+                  <div><strong>Status:</strong> ${report.result.message}</div>
+                  ${resultDetails ? `<pre>${resultDetails}</pre>` : ""}
+                </div>
+              `;
+          }
+
+          card.innerHTML = `
+              <div class="report-header">
+                <div class="report-type">
+                  <i class="fas ${
+                    report.type === "ip_scan"
+                      ? "fa-network-wired"
+                      : "fa-shield-virus"
+                  }"></i>
+                  ${report.type === "ip_scan" ? "IP Scan" : "Malware Scan"}
+                </div>
+                <span class="status-badge ${statusClass}">
+                  ${status}
+                </span>
+              </div>
+              <div class="report-content">
+                <div class="report-timestamp">
+                  <i class="far fa-clock"></i>
+                  ${timestamp}
+                </div>
+                ${scanDetails}
+              </div>
+            `;
+
+          reportsList.appendChild(card);
+        });
+
+        updatePagination(total);
+      }
+
+      function updatePagination(total) {
+        const totalPages = Math.ceil(total / reportsPerPage);
+        const pagination = document.getElementById("pagination");
+        pagination.innerHTML = "";
+
+        if (totalPages <= 1) return;
+
+        for (let i = 1; i <= totalPages; i++) {
+          const button = document.createElement("button");
+          button.className = `page-button ${i === currentPage ? "active" : ""}`;
+          button.textContent = i;
+          button.onclick = () => {
+            currentPage = i;
+            fetchReports();
+          };
+          pagination.appendChild(button);
+        }
+      }
+
+      // Event listeners for filters
+      document.getElementById("typeFilter").addEventListener("change", () => {
+        currentPage = 1;
+        fetchReports();
+      });
+
+      document.getElementById("timeFilter").addEventListener("change", () => {
+        currentPage = 1;
+        fetchReports();
+      });
+
+      document.getElementById("statusFilter").addEventListener("change", () => {
+        currentPage = 1;
+        fetchReports();
+      });
+
+      // Initial load
+      fetchReports();
+    </script>
+  </body>
+</html>
